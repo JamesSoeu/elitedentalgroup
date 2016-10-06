@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elitedentalgroup.dao.FormRequestDAO">
+	<resultMap type="FormRequestDTO" id="formRequest">
+		<result property="formRequestId" column="form_request_id" />
+		<result property="formCreatedDate" column="created_date" />
+		<result property="message" column="message" />
+		<association property="bestTimeDto" resultMap="bestTime"></association>
+		<association property="purposeDto" resultMap="purpose"></association>
+		<association property="interestedDto" resultMap="interested"></association>
+		<association property="personRequestDto"
+			resultMap="com.elitedentalgroup.dao.PersonRequestDAO.personRequest"></association>
+	</resultMap>
+
+	<resultMap type="BestTimeDTO" id="bestTime">
+		<result property="bestTimeName" column="best_time_name" />
+	</resultMap>
+
+	<resultMap type="InterestedDTO" id="interested">
+		<result property="interestedName" column="interested_name" />
+	</resultMap>
+
+	<resultMap type="PurposeDTO" id="purpose">
+		<result property="purposeName" column="purpose_name" />
+	</resultMap>
+
+	<!-- ===== Insert Patient ===== -->
+	<insert id="insert" statementType="PREPARED" parameterType="FormRequestDTO">
+		INSERT INTO form_request
+		VALUES (
+		#{formRequestId},
+		#{formCreatedDate},
+		#{purposeDto.purposeId},
+		#{interestedDto.interestedId},
+		#{bestTimeDto.bestTimeId},
+		#{personRequestDto.personRequestId},
+		#{message}
+		)
+
+	</insert>
+
+	<select id="getFormRequestById" resultMap="formRequest">
+		SELECT fr.form_request_id,
+		fr.created_date,
+		pr.first_name,
+		pr.last_name,
+		pr.phone,
+		pr.email,
+		fr.message,
+		bt.best_time_name,
+		pur.purpose_name,
+		i.interested_name
+		FROM form_request as fr
+		INNER JOIN person_request as pr on fr.person_request_id = pr.person_request_id
+		INNER JOIN best_time as bt on bt.best_time_Id = fr.best_time_id
+		INNER JOIN purpose as pur on pur.purpose_id = fr.purpose_id
+		INNER JOIN interested as i on i.interested_id = fr.interested_id
+		WHERE fr.form_request_id = #{formRequestId}
+	</select>
+
+	<select id="getFormRequestList" resultMap="formRequest" parameterType="Date">
+		SELECT fr.form_request_id,
+		fr.created_date,
+		pr.first_name,
+		pr.last_name,
+		pr.phone,
+		pr.email,
+		fr.message,
+		bt.best_time_name,
+		pur.purpose_name,
+		i.interested_name
+		FROM form_request as fr
+		INNER JOIN person_request as pr on fr.person_request_id = pr.person_request_id
+		INNER JOIN best_time as bt on bt.best_time_Id = fr.best_time_id
+		INNER JOIN purpose as pur on pur.purpose_id = fr.purpose_id
+		INNER JOIN interested as i on i.interested_id = fr.interested_id
+		WHERE fr.created_date &gt;= #{startDate} AND fr.created_date &lt;=  #{endDate}
+		<!-- WHERE fr.created_date &gt; '20160629000000' AND fr.created_date &lt;  '20160729000000' -->
+	</select>
+
+</mapper>

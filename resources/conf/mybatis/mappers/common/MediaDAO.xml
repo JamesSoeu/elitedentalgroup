@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elitedentalgroup.dao.MediaDAO">
+	<resultMap type="MediaDTO" id="mediaMap">
+		<result property="mediaId" column="m_id" />
+		<result property="path" column="path" />
+		<result property="createdDate" column="created_date" />
+		<association property="patient" resultMap="p_id"></association>
+		<association property="mediaType" resultMap="m_t_id"></association>
+		<association property="caseHistory" resultMap="c_h_id"></association>
+		<association property="service" resultMap="s_id"></association>
+		<association property="blog" resultMap="com.elitedentalgroup.dao.BlogDAO.blog"></association>
+		<association property="testimonial" resultMap="t_id"></association>
+		
+	</resultMap>
+
+	<!-- ===== Insert Media ===== -->
+	<insert id="insert" statementType="PREPARED" parameterType="MediaDTO">
+		INSERT INTO media
+		VALUES (
+		#{mediaId},
+		#{path},
+		#{createdDate},
+		#{patient.patientId},
+		#{mediaType},
+		#{caseHistory.caseHistoryId},
+		#{service.serviceId},
+		#{blog.blogId},
+		#{testimonial.testimonialId}
+		)
+
+	</insert>
+	
+	<delete id="delete" statementType="PREPARED">
+		DELETE FROM media
+		WHERE m_id = #{mediaId}
+	</delete>
+	
+	<select id="getMediaById" resultMap="mediaMap" statementType="PREPARED">
+		SELECT *
+		FROM media
+		WHERE
+			m_id = #{mediaId}
+	</select>
+
+</mapper>

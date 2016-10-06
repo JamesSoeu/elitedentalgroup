@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elitedentalgroup.dao.ServiceDAO">
+	<resultMap type="ServiceDTO" id="serviceMap">
+		<result property="serviceId" column="s_id" />
+		<result property="serviceName" column="name" />
+		<result property="serviceContent" column="content" />
+		<result property="serviceSubContent" column="sub_content" />
+		<result property="createdDate" column="created_date" />
+	</resultMap>
+
+	<resultMap type="MediaDTO" id="mediaServiceMap">
+		<result property="mediaId" column="m_id" />
+		<result property="path" column="path" />
+		<result property="createdDate" column="created_date" />
+		<association property="service" resultMap="serviceMap"></association>
+
+	</resultMap>
+
+	<insert id="insert" statementType="PREPARED" parameterType="ServiceDTO">
+		INSERT INTO service
+		VALUES (
+		#{serviceId},
+		#{serviceName},
+		#{serviceSubContent},
+		#{serviceContent},
+		#{createdDate}
+		)
+
+	</insert>
+
+	<select id="getServiceDtoById" resultMap="serviceMap">
+		SELECT *
+		FROM
+			service
+		WHERE s_id = #{serviceId}
+	</select>
+
+	<select id="getMediaServiceDtoList" resultMap="mediaServiceMap">
+		SELECT m.path,
+			   s.s_id, 
+			   s.name, 
+			   s.sub_content, 
+			   s.created_date
+		FROM service as s 
+		left JOIN media as m 
+			on s.s_id = m.s_id
+		ORDER BY created_date
+	</select>
+	
+	<select id="getMediaServiceDtoById" resultMap="mediaServiceMap" parameterType="String">
+		SELECT m.path,
+			   m.m_id, 
+			   s.s_id, 
+			   s.name, 
+			   s.content,
+			   s.sub_content, 
+			   s.created_date
+		FROM service as s 
+		left JOIN media as m 
+			on s.s_id = m.s_id
+		WHERE s.s_id = #{serviceId}
+	</select>
+	
+	<update id="update" statementType="PREPARED" parameterType="ServiceDTO">
+		UPDATE service SET
+			name = #{serviceName},
+			sub_content = #{serviceSubContent},
+			content = #{serviceContent}
+		WHERE 
+			s_id = #{serviceId}
+	
+	</update>
+	
+	<delete id="delete" statementType="PREPARED">
+		DELETE FROM service
+		WHERE s_id = #{serviceId}
+	</delete>
+
+</mapper>

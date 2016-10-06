@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elitedentalgroup.dao.BlogDAO">
+	<resultMap type="BlogDTO" id="blogDto">
+		<result property="blogId" column="b_id" />
+		<result property="blogTitle" column="title" />
+		<result property="blogContent" column="content" />
+		<result property="blogSubContent" column="sub_content" />
+		<result property="createdDate" column="created_date" />
+		<association property="authorDto"
+			resultMap="authorMap" />
+	</resultMap>
+
+	<resultMap type="AuthorDTO" id="authorMap">
+		<result property="authorId" column="author_id" />
+		<result property="authorName" column="author_name" />
+	</resultMap>
+
+	<resultMap type="MediaDTO" id="mediaBlogMap">
+		<result property="mediaId" column="m_id" />
+		<result property="path" column="path" />
+		<result property="createdDate" column="created_date" />
+		<association property="blog" resultMap="blogDto"></association>
+
+	</resultMap>
+
+	<insert id="insert" statementType="PREPARED" parameterType="BlogDTO">
+		INSERT INTO blog
+		VALUES (
+		#{blogId},
+		#{blogTitle},
+		#{blogSubContent},
+		#{blogContent},
+		#{createdDate},
+		#{authorDto.authorId}
+		)
+
+	</insert>
+
+	<select id="getBlogById" resultMap="blogDto">
+		SELECT *
+		FROM blog as b inner join author as a on b.author_id = a.author_id
+		WHERE
+		b_id = #{blogId}
+	</select>
+
+	<select id="getMediaBlogList" resultMap="mediaBlogMap">
+		SELECT
+			b.b_id,
+			b.title,
+			b.sub_content,
+			b.created_date,
+			m.path,
+			m.m_id,
+		    a.author_id,
+			a.author_name
+		FROM blog as b
+			left join media as m on b.b_id = m.b_id
+			inner join author as a on b.author_id = a.author_id
+	</select>
+
+	<select id="getMediaBlogById" resultMap="mediaBlogMap">
+		SELECT
+			b.b_id,
+			b.title,
+			b.sub_content,
+			b.content,
+			b.created_date,
+			m.path,
+			m.m_id,
+			a.author_id,
+			a.author_name
+		FROM blog as b
+			left join media as m on b.b_id = m.b_id
+			inner join author as a on b.author_id = a.author_id
+		WHERE
+			b.b_id = #{blogId}
+	</select>
+
+	<update id="update" statementType="PREPARED" parameterType="BlogDTO">
+		UPDATE blog SET
+		title = #{blogTitle},
+		sub_content = #{blogSubContent},
+		content = #{blogContent}
+		WHERE
+		b_id = #{blogId}
+	</update>
+
+	<delete id="delete" statementType="PREPARED">
+		DELETE FROM blog
+		WHERE
+		b_id = #{blogId}
+	</delete>
+
+</mapper>

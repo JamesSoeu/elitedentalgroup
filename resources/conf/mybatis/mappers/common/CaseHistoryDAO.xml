@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elitedentalgroup.dao.CaseHistoryDAO">
+	<resultMap type="CaseHistoryDTO" id="caseHistoryDto">
+		<result property="caseHistoryId" column="c_h_id" />
+		<result property="caseHistoryTitle" column="title" />
+		<result property="subContent" column="sub_content" />
+		<result property="content" column="content" />
+		<result property="createdDate" column="created_date" />
+	</resultMap>
+
+	<resultMap type="CaseHistoryDTO" id="caseHistoryPatient"
+		extends="caseHistoryDto">
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="city" column="city" />
+	</resultMap>
+
+	<resultMap type="MediaDTO" id="mediaCaseHistoryMap">
+		<result property="mediaId" column="m_id" />
+		<result property="path" column="path" />
+		<result property="createdDate" column="created_date" />
+		<association property="caseHistory" resultMap="caseHistoryPatient"></association>
+
+	</resultMap>
+
+	<insert id="insert" statementType="PREPARED" parameterType="CaseHistoryDTO">
+		INSERT INTO case_history
+		VALUES (
+		#{caseHistoryId},
+		#{caseHistoryTitle},
+		#{subContent},
+		#{content},
+		#{createDate}
+		)
+
+	</insert>
+	
+	<update id="update" statementType="PREPARED" parameterType="CaseHistoryDTO">
+		UPDATE case_history
+		SET
+			title = #{caseHistoryTitle},
+			sub_content = #{subContent},
+			content = #{content}
+		WHERE 
+			c_h_id =#{caseHistoryId}
+	
+	</update>
+
+	<select id="getCaseHistoryById" resultMap="caseHistoryDto">
+		SELECT *
+		FROM
+		case_history
+		WHERE c_h_id = #{caseHistoryId}
+	</select>
+
+	<select id="getMediaCaseHistoryList" resultMap="mediaCaseHistoryMap">
+		SELECT ch.c_h_id,
+			   ch.title,
+			   ch.sub_content,
+			   ch.content, 
+			   ch.created_date, 
+			   m.path,
+			   m.m_id,
+			   p.first_name,
+			   p.last_name, 
+			   p.city
+		FROM case_history as ch
+		left join media as m on ch.c_h_id = m.c_h_id
+		left join patient as p on ch.c_h_id = p.c_h_id
+	</select>
+	
+	<select id="getMediaCaseHistoryById" resultMap="mediaCaseHistoryMap" parameterType="String">
+		SELECT ch.c_h_id,
+			   ch.title,
+			   ch.sub_content,
+			   ch.content, 
+			   ch.created_date, 
+			   m.path,
+			   m.m_id
+		FROM case_history as ch
+			left join media as m 
+			on ch.c_h_id = m.c_h_id
+		WHERE 
+			 ch.c_h_id = #{caseHistoryId}
+	</select>
+	
+	<delete id="delete" statementType="PREPARED">
+		DELETE FROM case_history
+		WHERE 
+			c_h_id = #{caseHistoryId}
+	</delete>
+
+</mapper>

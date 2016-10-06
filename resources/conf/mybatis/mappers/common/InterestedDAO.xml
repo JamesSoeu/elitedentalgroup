@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.elitedentalgroup.dao.InterestedDAO">
+	<resultMap type="InterestedDTO" id="interested">
+		<result property="interestedId" column="interested_id" />
+		<result property="interestedName" column="interested_name" />
+		<result property="createdDate" column="created_date" />
+	</resultMap>
+
+<!-- 
+	<insert id="insert" statementType="PREPARED" parameterType="PatientDTO" >
+		INSERT INTO patient
+		VALUES (
+		#{patientId},
+		#{firstName},
+		#{lastName},
+		#{address},
+		#{city},
+		#{state},
+		#{zip},
+		#{phone},
+		#{email},
+		#{dob},
+		#{registedDate},
+		#{caseHistoryId}
+		)
+
+	</insert>
+	
+	<select id="getPatientById" resultMap="Patient">
+		SELECT * 
+		FROM patient as p
+		WHERE p.p_id = #{patientId}
+	</select>
+ -->
+</mapper>
